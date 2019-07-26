@@ -131,17 +131,84 @@ Generate a new bim file for your GWAS, corrected for SNP ID and allele coding/or
 awk '{if($8==2){a=$14;$14=$15;$15=a};print $10"\t"$11"\t"$12"\t"$13"\t"$14"\t"$15}' \
   file.bim.orig.info > file.bim
 ```
-Now change the SNP ids of the 1kg3 genotypes vcfs
+Now change the SNP ids on the 1kg3 genotypes vcfs
 
 ```
 for i in {1..22}
 do
 zcat ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz | grep '^#' > ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.header
 
-zcat ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz | grep -v '^#' | awk 'BEGIN {OFS="\t"}{$3=$1"_"$2"_"$4"_"$5} {print}' | cat /projects/b1049/bernabe/1kg3/ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.header - | gzip -c >  /projects/b1049/bernabe/1kg3/ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.vcf.gz
+zcat ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz | grep -v '^#' | awk 'BEGIN {OFS="\t"}{$3=$1"_"$2"_"$4"_"$5} {print}' | cat ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.header - | gzip -c >  ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.vcf.gz
 
-rm /projects/b1049/bernabe/1kg3/ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.header " > chr${i}.convert_to_RAWID.sh
+rm ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.header
 done
+```
+Create a file with only SNP IDs from your GWAS data (file.ID.txt) and use it to extract them from the edited 1kg3p3 files with Vcftools
+```
+for i in {1..22}
+do
+vcftools --gzvcf ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.vcf.gz --snps file.ID.txt --recode --recode-INFO-all --out ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered
+done 
+```
+Concatenate all chromosomes 1 to 22 from the resulting VCFs from 1kg3p3. First create a list of the VCF files:
+```
+for i in {1..22}
+do
+echo ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered.recode.vcf >> vcf_input.txt
+done
+```
+Concatenate with vcf-concat tool from Vcftools (I would recommend to export the VCFtools directory into your PATH enviroment first)
+```
+vcf-concat `cat vcf_input.txt` | gzip -c > chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered.recode.vcf.gz
+```
+Convert the concatenated VCF file to plink format
+```
+plink --gzvcf chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered.recode.vcf.gz --double-id --biallelic-only strict list --vcf-half-call missing --make-bed --out chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered
+```
+Merge your GWAS data with the 1kg3p3 file
+```
+plink --bfile file --bmerge chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered --make-bed --out file.1kg3p3.merged
+```
+Now prepare files for running PCA
+- Create a file named pca-populations.txt :
+```
+3
+4
+5
+6
+7
+```
+Each number corresponds to the 5 superpopulations present in the 1000 genomes project phase 3 population, you can extract the information from this spreadsheet (http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/20130606_sample_info.xlsx). In this example, we correlate individuals ID in the .fam file with their superpopulation number in this way, 3=EUR, 4=AMR, 5=AFR, 6=EAS, 7=SAS. Modify the phenotype column in the file.1kg3p3.merged.fam file so these numbers are reflected in the population. 
+```
+...
+NA21128 NA21128 0 0 0 7
+NA21129 NA21129 0 0 0 7
+NA21130 NA21130 0 0 0 7
+NA21133 NA21133 0 0 0 7
+NA21135 NA21135 0 0 0 7
+NA21137 NA21137 0 0 0 7
+NA21141 NA21141 0 0 0 7
+NA21142 NA21142 0 0 0 7
+NA21143 NA21143 0 0 0 7
+NA21144 NA21144 0 0 0 7
+...
+```
+Create the .pedind and .pedsnp files from the plink files
+```
+cp file.1kg3p3.merged.fam file.1kg3p3.merged.pedind
+cp file.1kg3p3.merged.bim file.1kg3p3.merged.pedsnp
+```
+Run the smartpca program from the EIGENSOFT software. The following command runs the PCA requesting 10 eigenvecrtors and running with 10 cores. It is recommended to export the EIGNESOFT bin folder to your PATH enviroment first.
+```
+smartpca.perl -i file.1kg3p3.merged.bed -a file.1kg3p3.merged.pedsnp -b file.1kg3p3.merged.pedind -o file.1kg3p3.merged.pca -p file.1kg3p3.merged.plot -e file.1kg3p3.merged.eval -l file.1kg3p3.merged.log -k 10 -t 10 -w pca-populations.txt
+```
+Take the file file.1kg3p3.merged.evec and calculate the average and plus/minos 6 standard deviations for each of the 10 eigenvectors, separatedly, and identify outlier individuals. Create the file fail-PCA.txt with the outlying individual IDs.
+
+### Remove all QC-failing individuals from the original plink file
+```
+cat fail-sexcheck.txt fail-hetrate.txt fail-missingness.txt fail-PCA.txt | sort | uniq | awk '{print $1 "\t" $1}' > fail-ALLQC.txt
+
+plink --bfile file --remove fail-ALLQC.txt --make-bed --out file.AllIndivQC
 ```
 
 
