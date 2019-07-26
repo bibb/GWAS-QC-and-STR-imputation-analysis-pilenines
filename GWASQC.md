@@ -99,7 +99,7 @@ zcat ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz | grep
 
 perl bimAnnotationUpdate.pl file.bim < 1kg3p3.bim > file.bim.info
 ```
-examine SNPs carefully
+Examine SNPs carefully
 ```
 cut -f 7,8 file.bim.info | sort | uniq -c
  121236 id      1       # same ID, same position, same alleles
@@ -112,7 +112,7 @@ cut -f 7,8 file.bim.info | sort | uniq -c
   21423 pos     2       # same position, different order of alleles, different ID 
     201 pos     -9      # same position, different Alleles, different ID
 ```
-get only good SNPs
+Get only good SNPs
 ```
 awk '$8>0{print $2}' file.bim.info > file.snps 
 
@@ -122,7 +122,7 @@ make a security copy of your original .bim file
 
 cp file.bim file.bim.orig
 ```
-verify results
+Verify results
 ```
 perl bimAnnotationUpdate.pl file.bim.orig < 1kg3p3.bim > file.bim.orig.info
 ```
