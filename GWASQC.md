@@ -76,7 +76,7 @@ This step si similar to the heterozygosity one, because if you remove too many i
 ### Population substructure
 
 In order to detect individuals with outliying population structure, we will run a PCA analysis using the 1000 genomes project
-as a reference population. This is also a LD sensitive analysis, therefore prunning is necesary (see avobe).
+as a reference population. 
 
 First, download the 1000 genomes phase3 genotypes and sites database from ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/
 
@@ -169,6 +169,12 @@ Merge your GWAS data with the 1kg3p3 file
 ```
 plink --bfile file --bmerge chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered --make-bed --out file.1kg3p3.merged
 ```
+Prune your data similiarly to how was done for the IBD analysis
+```
+plink --bfile file.1kg3p3.merged --indep-pairwise 50 5 0.2 --out file.1kg3p3.merged
+
+plink --bfile file.1kg3p3.merged --extract file.1kg3p3.merged.prune.in --make-bed --out file.1kg3p3.merged.pruned
+```
 Now prepare files for running PCA
 - Create a file named pca-populations.txt :
 ```
@@ -178,7 +184,7 @@ Now prepare files for running PCA
 6
 7
 ```
-Each number corresponds to the 5 superpopulations present in the 1000 genomes project phase 3 population, you can extract the information from this spreadsheet (http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/20130606_sample_info.xlsx). In this example, we correlate individuals ID in the .fam file with their superpopulation number in this way, 3=EUR, 4=AMR, 5=AFR, 6=EAS, 7=SAS. Modify the phenotype column in the file.1kg3p3.merged.fam file so these numbers are reflected in the population. Superpopulation information is in the following link: http://www.internationalgenome.org/category/population/
+Each number corresponds to the 5 superpopulations present in the 1000 genomes project phase 3 population, you can extract the information from this [spreadsheet](http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/20130606_sample_info.xlsx). In this example, we correlate individuals ID in the .fam file with their superpopulation number in this way, 3=EUR, 4=AMR, 5=AFR, 6=EAS, 7=SAS. Modify the phenotype column in the file.1kg3p3.merged.fam file so these numbers are reflected in the population. Superpopulation information is [here](http://www.internationalgenome.org/category/population/)
 ```
 ...
 NA21128 NA21128 0 0 0 7
@@ -195,12 +201,12 @@ NA21144 NA21144 0 0 0 7
 ```
 Create the .pedind and .pedsnp files from the plink files
 ```
-cp file.1kg3p3.merged.fam file.1kg3p3.merged.pedind
-cp file.1kg3p3.merged.bim file.1kg3p3.merged.pedsnp
+cp file.1kg3p3.merged.pruned.fam file.1kg3p3.merged.pruned.pedind
+cp file.1kg3p3.merged.pruned.bim file.1kg3p3.merged.pruned.pedsnp
 ```
 Run the smartpca program from the EIGENSOFT software. The following command runs the PCA requesting 10 eigenvecrtors and running with 10 cores. It is recommended to export the EIGNESOFT bin folder to your PATH enviroment first.
 ```
-smartpca.perl -i file.1kg3p3.merged.bed -a file.1kg3p3.merged.pedsnp -b file.1kg3p3.merged.pedind -o file.1kg3p3.merged.pca -p file.1kg3p3.merged.plot -e file.1kg3p3.merged.eval -l file.1kg3p3.merged.log -k 10 -t 10 -w pca-populations.txt
+smartpca.perl -i file.1kg3p3.merged.pruned.bed -a file.1kg3p3.merged.pruned.pedsnp -b file.1kg3p3.merged.pruned.pedind -o file.1kg3p3.merged.pruned.pca -p file.1kg3p3.merged.pruned.plot -e file.1kg3p3.merged.pruned.eval -l file.1kg3p3.merged.pruned.log -k 10 -t 10 -w pca-populations.txt
 ```
 Take the file file.1kg3p3.merged.evec and calculate the average and plus/minos 6 standard deviations for each of the 10 eigenvectors, separatedly, and identify outlier individuals. Create the file fail-PCA.txt with the outlying individual IDs.
 
