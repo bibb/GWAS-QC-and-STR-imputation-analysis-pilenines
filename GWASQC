@@ -1,4 +1,4 @@
-Individual level QCs for GWAS data include:
+##Individual level QCs for GWAS data include:
 - Sex check: sex misclasification
 - Heterozygosity rate: high or low heterozygosity rates
 - Individual genotype missingness: removal of individuals with more than 10% of missing genotypes
