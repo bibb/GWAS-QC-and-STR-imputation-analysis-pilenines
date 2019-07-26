@@ -76,7 +76,7 @@ This step si similar to the heterozygosity one, because if you remove too many i
 ### Population substructure
 
 In order to detect individuals with outliying population structure, we will run a PCA analysis using the 1000 genomes project
-as a reference population.
+as a reference population. This is also a LD sensitive analysis, therefore prunning is necesary (see avobe).
 
 First, download the 1000 genomes phase3 genotypes and sites database from ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/
 
