@@ -6,10 +6,11 @@
 - PCA: Population substructure
 
 
-Sex check
-
+### Sex check
+```
 plink --bfile file --check-sex --out file.sexcheck
-
+```
+```
 FID	IID	PEDSEX	SNPSEX	STATUS	F
 001_10	001_10	1	2	PROBLEM	-1.316
 003-08	003-08	1	2	PROBLEM	0.002542
@@ -18,14 +19,15 @@ FID	IID	PEDSEX	SNPSEX	STATUS	F
 004-10	004-10	1	0	PROBLEM	0.4892
 004_06	004_06	2	2	OK	-0.5289
 006-10	006-10	2	2	OK	0.002542
-
+```
 Manual inspection of outputfile: males with F values < 0.5 and females > 0.5 should be removed from analysis. Then, create file fail-sexcheck.txt with
 the IDs of the removed individuals.
 
-Heterozygosity rate
-
+### Heterozygosity rate
+```
 plink --bfile file --het --out file.het
-
+```
+```
 FID	IID	O(HOM)	E(HOM)	N(NM)	F
 001_10	001_10	36370	3.61E+04	46379	0.02218
 003-08	003-08	37546	3.77E+04	48338	-0.01449
@@ -34,52 +36,51 @@ FID	IID	O(HOM)	E(HOM)	N(NM)	F
 004-10	004-10	37370	3.75E+04	48116	-0.01368
 004_06	004_06	36776	3.68E+04	47174	-0.0006843
 006-10	006-10	37570	3.76E+04	48259	-0.00583
-
-Calclate the observed heterozygosity rate per individual using the formula (N(NM) - O(Hom))/N(NM). 
-Create a graph where the observed heterozygosity rate per individual is plotted on the x-axis and the proportion of missing SNPs
-per individuals is plotted on the y-axis. 
-This step is open to interpretation. A good rule of thum is to detect outlying individuals with more and less than 3 standard deviations from 
-the mean for the result from (N(NM) - O(Hom))/N(NM). If you remove too many individuals, let's say > 10%, use a less strict cutoff, like 5 SD. 
+```
+Calclate the observed heterozygosity rate per individual using the formula 
+```
+(N(NM) - O(Hom))/N(NM):
+```
+Create a graph where the observed heterozygosity rate per individual is plotted on the x-axis and the proportion of missing SNPs per individuals is plotted on the y-axis. 
+This step is open to interpretation. A good rule of thum is to detect outlying individuals with more and less than 3 standard deviations from the mean for the result from (N(NM) - O(Hom))/N(NM). If you remove too many individuals, let's say > 10%, use a less strict cutoff, like 5 SD. 
 
 Save the IDs of the outlying individuals in a file > fail-hetrate.txt
 
-Individual genotype missingness
-
+### Individual genotype missingness
+```
 plink --bfile file --missing --out file.missing
+```
+Examine the file file.missing.imiss and remove individuals with more than 10% of missing genotypes and save their ids to > fail-missingness.txt
 
-examine the file file.missing.imiss and remove individuals with more than 10% of missing genotypes and save their ids to > fail-missingness.txt
-
-Identity by descent
+### Identity by descent
 
 This is a LD sensitive analysis, therefore prunning is necesary.
-
+```
 plink --bfile file --indep-pairwise 50 5 0.2 --out file
-
+```
 Select the file file.prune.in with the indidependent SNPs (r2 < 0.2) and run the genome command in plink.
-
+```
 plink --bfile file --extract file.prune.in --genome --out file.prune.ibd
-
-In order to detect pairs of individuals with cryptic relatedness (pi_hat > 0.187) and keep only 1, you need to provide the missinges file, 
-because is a good rule of thumb to select the individual with the highest genotyping rate. For this, the .genome and .imiss file
-should have the same name.
-
+```
+In order to detect pairs of individuals with cryptic relatedness (pi_hat > 0.187) and keep only 1, you need to provide the missinges file, because is a good rule of thumb to select the individual with the highest genotyping rate. For this, the .genome and .imiss files should have the same name.
+```
 cp file.missing.imiss file.ibd.imiss
 cp file.prune.ibd.genome file.ibd.genome
-
-Then run the script run-IBD-QC.pl located in the resources folder to detect the related individuals and to generate the file fail-ibd.txt.
-
+```
+Then run the script ***run-IBD-QC.pl*** located in the resources folder to detect the related individuals and to generate the file fail-ibd.txt.
+```
 perl run-IBD-QC.pl file.ibd
+```
+This step si similar to the heterozygosity one, because if you remove too many individuals with this threshold, you can be less strict and rais the pi_hat cutoff up to 0.25, i.e. removing individuals with 2 degree of relatioship ans avobe. Explore your results and make a decision.
 
-This step si similar to the heterozygosity one, because if you remove too many individuals with this threshold, you can be less strict and rais the 
-pi_hat cutoff up to 0.25, i.e. removing individuals with 2 degree of relatioship ans avobe. Explore your results and make a decision.
-
-Population substructure
+### Population substructure
 
 In order to detect individuals with outliying population structure, we will run a PCA analysis using the 1000 genomes project
 as a reference population.
 
 First, download the 1000 genomes phase3 genotypes and sites database from ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/
 
+```
 for i in {1..22}
 do
 wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz
@@ -88,18 +89,18 @@ done
 
 wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz
 wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz.tbi
+```
 
 Now get the common variants between your GWAS dataset and the 1000 genomes project suing provided scripts.
-Manually generate a bim file from the 1000 genomes project sites vcf file. Also change rsnumbers in the ID column to a more unique
-identifier such as chr_bp_ref_alt
-
+Manually generate a bim file from the 1000 genomes project sites vcf file. Also change rsnumbers in the ID column to a more unique identifier such as chr_bp_ref_alt
+```
 zcat ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz | grep -v "#" | awk '{print $1 "\t" $1"_"$2"_"$4"_"$5 "\t" "0" "\t" $2 "\t" $4 "\t" $5}' > 1kg3p3.bim
 
 
 perl bimAnnotationUpdate.pl file.bim < 1kg3p3.bim > file.bim.info
-
+```
 examine SNPs carefully
-
+```
 cut -f 7,8 file.bim.info | sort | uniq -c
  121236 id      1       # same ID, same position, same alleles
    6739 id      -1      # same ID, same position, different  alleles
@@ -110,26 +111,29 @@ cut -f 7,8 file.bim.info | sort | uniq -c
    1205 pos     -1      # same position, different ID and Alleles
   21423 pos     2       # same position, different order of alleles, different ID 
     201 pos     -9      # same position, different Alleles, different ID
-    
+```
 get only good SNPs
+```
 awk '$8>0{print $2}' file.bim.info > file.snps 
 
 plink --bfile file --extract file.snps --make-bed --out  file.goodsnps
 
 make a security copy of your original .bim file
+
 cp file.bim file.bim.orig
-
+```
 verify results
-
+```
 perl bimAnnotationUpdate.pl file.bim.orig < 1kg3p3.bim > file.bim.orig.info
-
+```
 Generate a new bim file for your GWAS, corrected for SNP ID and allele coding/orientation according to the 1kg3 reference
-
+```
 awk '{if($8==2){a=$14;$14=$15;$15=a};print $10"\t"$11"\t"$12"\t"$13"\t"$14"\t"$15}' \
   file.bim.orig.info > file.bim
-
+```
 Now change the SNP ids of the 1kg3 genotypes vcfs
 
+```
 for i in {1..22}
 do
 zcat ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz | grep '^#' > ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.header
@@ -138,6 +142,6 @@ zcat ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.g
 
 rm /projects/b1049/bernabe/1kg3/ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.header " > chr${i}.convert_to_RAWID.sh
 done
-
+```
 
 
