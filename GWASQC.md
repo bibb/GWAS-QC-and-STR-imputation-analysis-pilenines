@@ -184,7 +184,7 @@ Now prepare files for running PCA
 6
 7
 ```
-Each number corresponds to the 5 superpopulations present in the 1000 genomes project phase 3 population, you can extract the information from this [spreadsheet](http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/20130606_sample_info.xlsx). In this example, we correlate individuals ID in the .fam file with their superpopulation number in this way, 3=EUR, 4=AMR, 5=AFR, 6=EAS, 7=SAS. Modify the phenotype column in the file.1kg3p3.merged.fam file so these numbers are reflected in the population. Superpopulation information is [here](http://www.internationalgenome.org/category/population/)
+Each number corresponds to the 5 superpopulations present in the 1000 genomes project phase 3 population, you can extract the information from this [spreadsheet](http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/20130606_sample_info.xlsx). In this example, we correlate individuals ID in the .fam file with their superpopulation number in this way, 3=EUR, 4=AMR, 5=AFR, 6=EAS, 7=SAS. Modify the phenotype column in the file.1kg3p3.merged.fam file (6th column) so these numbers are reflected in the population. Superpopulation information is [here](http://www.internationalgenome.org/category/population/)
 ```
 ...
 NA21128 NA21128 0 0 0 7
