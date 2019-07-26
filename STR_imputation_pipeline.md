@@ -1,5 +1,6 @@
 ## STR imputation pipeline
-- Download STR reference panel for each chromosome (1-22) from http://gymreklab.com/2018/03/05/snpstr_imputation.html
+This pipeline takes directions from [here](http://gymreklab.com/2018/03/05/snpstr_imputation.html)
+- Download STR reference panel for each chromosome (1-22) from [here](http://gymreklab.com/2018/03/05/snpstr_imputation.html)
 - Harmonize your target GWAS data with the reference panel
 - Perform imputation with Beagle
 - QC on imputed genotypes
