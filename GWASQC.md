@@ -39,7 +39,7 @@ FID	IID	O(HOM)	E(HOM)	N(NM)	F
 ```
 Calclate the observed heterozygosity rate per individual using the formula 
 ```
-(N(NM) - O(Hom))/N(NM):
+(N(NM) - O(Hom))/N(NM)
 ```
 Create a graph where the observed heterozygosity rate per individual is plotted on the x-axis and the proportion of missing SNPs per individuals is plotted on the y-axis. 
 This step is open to interpretation. A good rule of thum is to detect outlying individuals with more and less than 3 standard deviations from the mean for the result from (N(NM) - O(Hom))/N(NM). If you remove too many individuals, let's say > 10%, use a less strict cutoff, like 5 SD. 
