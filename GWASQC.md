@@ -37,7 +37,7 @@ FID	IID	O(HOM)	E(HOM)	N(NM)	F
 004_06	004_06	36776	3.68E+04	47174	-0.0006843
 006-10	006-10	37570	3.76E+04	48259	-0.00583
 ```
-Calclate the observed heterozygosity rate per individual using the formula 
+Calculate the observed heterozygosity rate per individual using the formula 
 ```
 (N(NM) - O(Hom))/N(NM)
 ```
