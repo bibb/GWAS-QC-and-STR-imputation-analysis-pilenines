@@ -91,7 +91,7 @@ wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.wgs.phase3_sh
 wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz.tbi
 ```
 
-Now get the common variants between your GWAS dataset and the 1000 genomes project using [provided scripts](GWAS-QC-and-STR-imputation-analysis-pilenines/GWAS_QC_scripts/).
+Now get the common variants between your GWAS dataset and the 1000 genomes project using [provided scripts](GWAS_QC_scripts/).
 Manually generate a bim file from the 1000 genomes project sites vcf file. Also change rsnumbers in the ID column to a more unique identifier such as chr_bp_ref_alt
 ```
 zcat ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz | grep -v "#" | awk '{print $1 "\t" $1"_"$2"_"$4"_"$5 "\t" "0" "\t" $2 "\t" $4 "\t" $5}' > 1kg3p3.bim
