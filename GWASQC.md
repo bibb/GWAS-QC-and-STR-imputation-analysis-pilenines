@@ -120,16 +120,16 @@ plink --bfile file --extract file.snps --make-bed --out  file.goodsnps
 
 make a security copy of your original .bim file
 
-cp file.bim file.bim.orig
+cp file.goodsnps file.goodsnps.orig
 ```
 Verify results
 ```
-perl bimAnnotationUpdate.pl file.bim.orig < 1kg3p3.bim > file.bim.orig.info
+perl bimAnnotationUpdate.pl file.goodsnps.orig < 1kg3p3.bim > file.goodsnps.orig.info
 ```
 Generate a new bim file for your GWAS, corrected for SNP ID and allele coding/orientation according to the 1kg3 reference
 ```
 awk '{if($8==2){a=$14;$14=$15;$15=a};print $10"\t"$11"\t"$12"\t"$13"\t"$14"\t"$15}' \
-  file.bim.orig.info > file.bim
+  file.goodsnps.orig.info > file.goodsnps.bim
 ```
 Now change the SNP ids on the 1kg3 genotypes vcfs
 
@@ -163,7 +163,7 @@ vcf-concat `cat vcf_input.txt` | gzip -c > chr1-22.phase3_shapeit2_mvncall_integ
 ```
 Convert the concatenated VCF file to plink format
 ```
-plink --gzvcf chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered.recode.vcf.gz --double-id --biallelic-only strict list --vcf-half-call missing --make-bed --out chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered
+plink --vcf chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered.recode.vcf.gz --double-id --biallelic-only strict list --vcf-half-call missing --make-bed --out chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered
 ```
 Merge your GWAS data with the 1kg3p3 file
 ```
