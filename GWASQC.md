@@ -157,7 +157,7 @@ do
 echo ALL.chr${i}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered.recode.vcf >> vcf_input.txt
 done
 ```
-Concatenate with vcf-concat tool from Vcftools (I would recommend to export the VCFtools directory into your PATH enviroment first)
+Concatenate with vcf-concat tool from Vcftools (I would recommend to export the VCFtools directory into your PERL PATH enviroment first, i.e. export PERL5LIB=/path/to/your/installation/perl)
 ```
 vcf-concat `cat vcf_input.txt` | gzip -c > chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered.recode.vcf.gz
 ```
