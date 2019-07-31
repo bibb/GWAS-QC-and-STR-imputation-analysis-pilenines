@@ -120,16 +120,16 @@ plink --bfile file --extract file.snps --make-bed --out  file.goodsnps
 
 make a security copy of your original .bim file
 
-cp file.goodsnps file.goodsnps.orig
+cp file.goodsnps.bim file.goodsnps.bim.orig
 ```
 Verify results
 ```
-perl bimAnnotationUpdate.pl file.goodsnps.orig < 1kg3p3.bim > file.goodsnps.orig.info
+perl bimAnnotationUpdate.pl file.goodsnps.bim.orig < 1kg3p3.bim > file.goodsnps.bim.orig.info
 ```
 Generate a new bim file for your GWAS, corrected for SNP ID and allele coding/orientation according to the 1kg3 reference
 ```
 awk '{if($8==2){a=$14;$14=$15;$15=a};print $10"\t"$11"\t"$12"\t"$13"\t"$14"\t"$15}' \
-  file.goodsnps.orig.info > file.goodsnps.bim
+  file.goodsnps.bim.orig.info > file.goodsnps.bim
 ```
 Now change the SNP ids on the 1kg3 genotypes vcfs
 
