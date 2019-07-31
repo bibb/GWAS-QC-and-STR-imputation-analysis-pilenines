@@ -39,7 +39,7 @@ do
   out=snp.str.chr${i}.vcf.gz
 done
 ```
-Filter the resulting VCF is kind of tricky, it has a DR2 measurement for how well the imputation went for each site, but there is no program use this variable consistently for SNPs, biallelic STRs and multiallelic STRs. Here I use the default of DR2 > 0.3 as filtering criteria, using a custom method. Variants with DR2 < 0.3 are set as missing.
+To filter the resulting VCF is kind of tricky, it has a DR2 measurement for how well the imputation went for each site, but there is no program use this variable consistently for SNPs, biallelic STRs and multiallelic STRs. Here I use the default of DR2 > 0.3 as filtering criteria, using a custom method. Variants with DR2 < 0.3 are set as missing.
 First, I separate SNPs from STRs in different VCF files
 
 Extract SNPs and STRs in different files
