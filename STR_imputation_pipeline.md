@@ -80,7 +80,7 @@ for i in {1..22}
 do
 zcat DR2A.onlySTRs.chr${i}.split.vcf.gz | grep -F "#" > DR2A.onlySTRs.chr${i}.split.uniqueID.vcf
 
-zcat splitted.DR2A.STR_only.noQC.chr${i}.vcf.gz | grep -F -v "#" | awk 'BEGIN {OFS="\t"} {$3=$3"_"NR} {print}' >> DR2A.onlySTRs.chr${i}.split.uniqueID.vcf
+zcat DR2A.onlySTRs.chr${i}.split.vcf.gz | grep -F -v "#" | awk 'BEGIN {OFS="\t"} {$3=$3"_"NR} {print}' >> DR2A.onlySTRs.chr${i}.split.uniqueID.vcf
 done
 ```
 Filter STRs by DR2 > 0.3
