@@ -167,7 +167,7 @@ plink --vcf chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RA
 ```
 Merge your GWAS data with the 1kg3p3 file
 ```
-plink --bfile file --bmerge chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered --make-bed --out file.1kg3p3.merged
+plink --bfile file.goodsnps --bmerge chr1-22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.RAWID.filtered --make-bed --out file.1kg3p3.merged
 ```
 Prune your data similiarly to how was done for the IBD analysis
 ```
